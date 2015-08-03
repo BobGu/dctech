@@ -1,9 +1,17 @@
+var data = [
+             {url: 'http://bit.ly/1IU5upf'},
+             {url: 'http://bit.ly/1M6PDo2'}
+           ];
 var Pictures = React.createClass({
   render: function() {
+    var pictureNodes = this.props.data.map(function (picture) {
+      return (
+        <Picture url={picture.url} />
+      );
+    });
     return (
       <div className="pictures">
-        <Picture photo="http://bit.ly/1KLVE9o" />
-        <Picture photo="http://bit.ly/1KMdeah" />
+        {pictureNodes}
       </div>
     );
   }
@@ -13,8 +21,8 @@ var Picture = React.createClass({
   render: function() {
     return (
       <div className="picture">
-        <div className="picturePhoto">
-          <img src={this.props.photo} />
+        <div className="pictureUrl">
+          <img src={this.props.url} />
         </div>
       </div>
     );
@@ -22,6 +30,6 @@ var Picture = React.createClass({
 });
 
 React.render(
-  <Pictures />,
+  <Pictures data={data} />,
   document.getElementById("content")
 );

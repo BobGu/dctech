@@ -1,12 +1,17 @@
-var data = [
-             {url: 'http://bit.ly/1IU5upf'},
-             {url: 'http://bit.ly/1M6PDo2'}
-           ];
+var data = {
+             data: [
+               {
+                 images: {
+                   standard_resolution: { url: 'http://bit.ly/1MHpXNJ'}
+                 }
+               }
+             ]
+           };
 var Pictures = React.createClass({
   render: function() {
-    var pictureNodes = this.props.data.map(function (picture) {
+    var pictureNodes = this.props.data.data.map(function (instagramObject) {
       return (
-        <Picture url={picture.url} />
+        <Picture url={instagramObject.images.standard_resolution.url} />
       );
     });
     return (

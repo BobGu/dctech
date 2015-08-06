@@ -1,21 +1,38 @@
 
 
 var PictureBox = React.createClass({
-  getInitialState: function() {
-    return {data: []};
-  },
-  componentDidMount: function() {
+  getInstagramData: function(nextPageUrl) {
     $.ajax({
-      url: this.props.url,
+      url: nextPageUrl,
       dataType: 'jsonp',
       cache: false,
+      async: false,
       success: function(data) {
-        this.setState({data: data.data});
+        var thirtyDaysAgo = (Date.now() / 1000) - (60 * 60 * 24 * 30);
+        var lessThanThirtyDaysAgo = _.all(data.data, function(instagramObject) {
+          return instagramObject.created_time > thirtyDaysAgo;
+        });
+        if(lessThanThirtyDaysAgo) {
+          this.setState({data: this.state.data.concat(data.data)});
+          this.getInstagramData(data.pagination.next_url);
+        }
+        else {
+          var filtered_data = _.filter(data.data, function(instagramObject){
+            return instagramObject.created_time > thirtyDaysAgo;
+          });
+          this.setState({data: this.state.data.concat(filtered_data)})
+        }
       }.bind(this),
       error: function(xhr, status, err) {
         console.error(this.props.url, status, err.toString());
       }.bind(this)
     });
+  },
+  getInitialState: function() {
+    return {data: []};
+  },
+  componentDidMount : function() {
+    this.getInstagramData(this.props.url);
   },
   render: function() {
     return (

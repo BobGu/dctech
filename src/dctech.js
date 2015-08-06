@@ -1,15 +1,33 @@
-var data = {
-             data: [
-               {
-                 images: {
-                   standard_resolution: { url: 'http://bit.ly/1MHpXNJ'}
-                 }
-               }
-             ]
-           };
+
+
+var PictureBox = React.createClass({
+  getInitialState: function() {
+    return {data: []};
+  },
+  componentDidMount: function() {
+    $.ajax({
+      url: this.props.url,
+      dataType: 'jsonp',
+      cache: false,
+      success: function(data) {
+        this.setState({data: data.data});
+      }.bind(this),
+      error: function(xhr, status, err) {
+        console.error(this.props.url, status, err.toString());
+      }.bind(this)
+    });
+  },
+  render: function() {
+    return (
+      <div className='pictureBox'>
+        <Pictures data={this.state.data} />
+      </div>
+    );
+  }
+});
 var Pictures = React.createClass({
   render: function() {
-    var pictureNodes = this.props.data.data.map(function (instagramObject) {
+    var pictureNodes = this.props.data.map(function (instagramObject) {
       return (
         <Picture url={instagramObject.images.standard_resolution.url} />
       );
@@ -35,6 +53,6 @@ var Picture = React.createClass({
 });
 
 React.render(
-  <Pictures data={data} />,
+  <PictureBox url='https://api.instagram.com/v1/tags/dctech/media/recent?client_id=fcd848752dbb44bebe0143378aa2142c' />,
   document.getElementById("content")
 );

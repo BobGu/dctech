@@ -1,7 +1,7 @@
 
 
 var PictureBox = React.createClass({
-  getInstagramData: function(nextPageUrl) {
+  getInstagramData: function(nextPageUrl, allInstagramObjects ) {
     $.ajax({
       url: nextPageUrl,
       dataType: 'jsonp',
@@ -13,14 +13,18 @@ var PictureBox = React.createClass({
           return instagramObject.created_time > thirtyDaysAgo;
         });
         if(lessThanThirtyDaysAgo) {
-          this.setState({data: this.state.data.concat(data.data)});
-          this.getInstagramData(data.pagination.next_url);
+          this.getInstagramData(data.pagination.next_url, allInstagramObjects.concat(data.data));
         }
         else {
           var filtered_data = _.filter(data.data, function(instagramObject){
             return instagramObject.created_time > thirtyDaysAgo;
           });
-          this.setState({data: this.state.data.concat(filtered_data)})
+          allInstagramObjects = allInstagramObjects.concat(filtered_data);
+          var sorted_data = _.sortBy(allInstagramObjects, function(instagramObject){
+            return [instagramObject.comments.count, parseInt(instagramObject.created_time)];
+          });
+          sorted_data = sorted_data.reverse();
+          this.setState({data: sorted_data });
         }
       }.bind(this),
       error: function(xhr, status, err) {
@@ -32,7 +36,7 @@ var PictureBox = React.createClass({
     return {data: []};
   },
   componentDidMount : function() {
-    this.getInstagramData(this.props.url);
+    this.getInstagramData(this.props.url, this.state.data);
   },
   render: function() {
     return (
@@ -73,3 +77,5 @@ React.render(
   <PictureBox url='https://api.instagram.com/v1/tags/dctech/media/recent?client_id=fcd848752dbb44bebe0143378aa2142c' />,
   document.getElementById("content")
 );
+
+flikr api key 013a3a4a679d634b6f2114ceb152a22e

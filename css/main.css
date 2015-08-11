@@ -1,0 +1,24 @@
+.picture {
+  display: inline-block;
+  margin: 1.5%;
+  width: 150px;
+}
+
+.comments {
+  display: inline;
+}
+
+.grid-item {
+  position: inline-block;
+  width: 100px;
+  height: auto;
+}
+
+.comment-content {
+  position: relative;
+  right: 50px;
+  bottom: 30px;
+  color: LIGHTGOLDENRODYELLOW;
+  font-size: 28px;
+  display: inline;
+}

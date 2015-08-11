@@ -1,7 +1,5 @@
-
-
 var PictureBox = React.createClass({
-  getInstagramData: function(nextPageUrl, allInstagramObjects ) {
+  getAllData: function(nextPageUrl, allInstagramObjects ) {
     $.ajax({
       url: nextPageUrl,
       dataType: 'jsonp',
@@ -13,7 +11,7 @@ var PictureBox = React.createClass({
           return instagramObject.created_time > thirtyDaysAgo;
         });
         if(lessThanThirtyDaysAgo) {
-          this.getInstagramData(data.pagination.next_url, allInstagramObjects.concat(data.data));
+          this.getAllData(data.pagination.next_url, allInstagramObjects.concat(data.data));
         }
         else {
           var filtered_data = _.filter(data.data, function(instagramObject){
@@ -28,7 +26,7 @@ var PictureBox = React.createClass({
           var flickrObjects;
           var thirtyDaysAgo = (Date.now() / 1000) - (60 * 60 * 24 * 30);
           $.ajax({
-            url:  "https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=013a3a4a679d634b6f2114ceb152a22e&tags=dctech&min_upload_date=" + thirtyDaysAgo / 10 + "&format=json&nojsoncallback=1",
+            url:  "https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=013a3a4a679d634b6f2114ceb152a22e&tags=dctech&min_upload_date=" + thirtyDaysAgo + "&format=json&nojsoncallback=1",
             dataType: 'json',
             cache: false,
             async: false,
@@ -79,7 +77,7 @@ var PictureBox = React.createClass({
     return {data: []};
   },
   componentDidMount : function() {
-    this.getInstagramData(this.props.url, this.state.data);
+    this.getAllData(this.props.url, this.state.data);
   },
   render: function() {
     return (
@@ -93,7 +91,7 @@ var Pictures = React.createClass({
   render: function() {
     var pictureNodes = this.props.data.map(function (object) {
       return (
-        <Picture url={object.url} />
+        <Picture url={object.url} commentCount={object.comments.count} comments={object.comments}/>
       );
     });
     return (
@@ -105,13 +103,26 @@ var Pictures = React.createClass({
 });
 
 var Picture = React.createClass({
+  componentDidMount: function () {
+    var element = this.getDOMNode();
+    $(element).find('.comment-content').hide()
+    $(element).hover(function(){
+      $(this).find('img').css('opacity', '0.7');
+      $(this).find('.comment-content').show();
+    }, function(){
+      $(this).find('.comment-content').hide();
+      $(this).find('img').css('opacity', '1.0');
+    });
+  },
   render: function() {
     return (
       <div className="picture">
-        <div className="pictureUrl">
-          <img src={this.props.url} />
+      <img className="grid-item" src={this.props.url} />
+        <div className="comment-content" data-comment-count={this.props.commentCount} data-comments={this.props.comments}>
+          {this.props.commentCount}
         </div>
       </div>
+
     );
   }
 });
